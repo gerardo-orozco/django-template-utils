@@ -1,9 +1,10 @@
+from decimal import Decimal
 import locale
 import re
-from datetime import date
+from django.utils import timezone
 from django import template
 from django.template.defaultfilters import stringfilter
-from django.forms.fields import (
+from django.forms import (
     CharField,
     TypedChoiceField,
     DecimalField,
@@ -17,7 +18,7 @@ from django.forms.fields import (
 register = template.Library()
 
 
-@register.filter()
+@register.filter
 def currency(value, other_locale=None):
     """
     Returns value represented as currency for the give locale.
@@ -31,14 +32,14 @@ def currency(value, other_locale=None):
     Produces:
     $13.00
     """
-    if type(value) in (int, float):
+    if type(value) in (int, float, Decimal):
         locale.setlocale(locale.LC_ALL, '%s.utf8' % (other_locale or 'en_US'))
         return locale.currency(value, grouping=True)
     return value
 
 
 @register.filter
-def int(value):
+def integer(value):
     """
     Returns the given value as an int type.
 
@@ -71,7 +72,7 @@ def startswith(value, arg):
 
 
 @register.filter
-def creditcard(value, arg):
+def creditcard(value, arg=4):
     """
     Hides parts of strings such as credit card or bank account numbers to
     show only the last amount of numbers.
@@ -85,11 +86,11 @@ def creditcard(value, arg):
     Produces:
     ************3456
     """
-    return '*' * len(value[:-arg]) + value[-arg:]
+    return '*' * len(value[:-int(arg)]) + value[-int(arg):]
 
 
-@register.filter(name='display')
-def get_display_value(bound_field, default=None):
+@register.filter
+def verbose(bound_field, default=None):
     """
     Returns the verbose value of a ChoiceField.
 
@@ -112,19 +113,23 @@ def get_display_value(bound_field, default=None):
     if default:
         NO_DATA_MESSAGE = default
 
-    field_type = type(bound_field.field)
+    field = bound_field.field
+
     # For text and numeric types, return the plain value
-    if isinstance(field_type, (CharField, DecimalField, IntegerField)):
+    if isinstance(field, (CharField, DecimalField, IntegerField)):
         return bound_field.value() if bound_field.value() else NO_DATA_MESSAGE
     # For boolean type, return a verbose representation of the value
-    elif isinstance(field_type, (BooleanField, NullBooleanField)):
+    elif isinstance(field, (BooleanField, NullBooleanField)):
         if bound_field.value() is None:
             return default or 'Maybe'
         return ('No', 'Yes')[bound_field.value()]
     # For choices, return the verbose value
-    elif isinstance(field_type, TypedChoiceField):
-        return dict(field_type.choices).get(bound_field.value(), NO_DATA_MESSAGE)
+    elif isinstance(field, TypedChoiceField):
+        return dict(field.choices).get(bound_field.value(), NO_DATA_MESSAGE)
     # For date types, return the age until the current date.
-    if isinstance(bound_field.field, (DateField, DateTimeField)):
-        age = (date.today() - bound_field.value()).days / 365
+    if isinstance(field, (DateField, DateTimeField)):
+        today = timezone.datetime.today()
+        if isinstance(field, DateField):
+            today = today.date()
+        age = (today - bound_field.value()).days / 365
         return age
