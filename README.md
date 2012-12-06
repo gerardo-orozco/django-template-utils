@@ -71,3 +71,60 @@ Usage:
 
 For example: Assuming value is `13`, `{{ value|currency }}` produces: `$13.00`
 
+#### integer
+
+Returns the given value as an int type.
+
+Usage:
+
+    {{ value|int }}
+    {% tag_that_requires_int value|int %}
+
+##### nolinebrs
+
+Removes all `<br>` tags in the given string.
+
+#### startswith
+
+Returns whether the given value starts with the given string arg. The argu must be a string.
+
+Usage:
+
+    {{ value|startsvith:"arg" }}
+
+#### creditcard
+
+Hides parts of strings such as credit card or bank account numbers to show only the last amount of numbers.
+
+Usage:
+
+    {{ value|creditcard:chars_tohide }}
+
+For example: Assuming value is "5000000000003456"
+
+    {{ value|creditcard:4 }}
+
+Produces:
+
+    ************3456
+
+#### verbose
+
+Returns the verbose value of a ChoiceField.
+
+Usage:
+
+    {{ form.field|display }}
+
+or
+
+    {% for field in form %}
+        {{ field|display }}
+    {% endfor %}
+
+For example:
+
+    Assuming <field> is a BooleanField with True
+    {{ field|display }}
+
+Produces: The string 'Yes'
