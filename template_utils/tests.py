@@ -30,6 +30,7 @@ class TemplateWithFilter(object):
         self.result = None
 
     def render(self, value, filter_, arg=None):
+        """ Renders the value for the given filter. """
         self.value = value
         self.filter = filter_
         self.filter_arg = (':"%s"' % arg) if arg else ''
@@ -51,6 +52,7 @@ class TemplateWithFilter(object):
         }
 
     def equals(self, expected):
+        """ Asserts that the produced value is the same as the expected. """
         match = self.results['filter'] == expected and \
             self.results['template'] == unicode(expected)
         return match

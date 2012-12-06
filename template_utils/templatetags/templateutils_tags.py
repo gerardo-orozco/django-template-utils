@@ -16,10 +16,14 @@ def active_url(request, url_name, **kwargs):
     Usage: Assuming that the reversed url is the current url, this tag will act
     as follows:
 
-    {% active_url request home %} -> class="ui-active-url"
-    {% active_url request home class_name=myclass %} -> class="myclass"
-    {% active_url request home use_class=False %} -> ui-active-url
-    {% active_url request home class_name=myclass use_class=False %} -> myclass
+    {% active_url request url_name %} -> class="ui-active-url"
+    {% active_url request url_name class_name=myclass %} -> class="myclass"
+    {% active_url request url_name use_class=False %} -> ui-active-url
+    {% active_url request url_name class_name=myclass use_class=False %} -> myclass
+
+    Where "urlname" is the name of the url to check;
+    this must be defined in your `URLCONF`, otherwise it will raise
+    a NoReverseMatch Error.
     """
     class_name = kwargs.get('class_name', 'ui-active-url')
     use_class = kwargs.get('use_attr', True)
@@ -34,9 +38,10 @@ def active_url(request, url_name, **kwargs):
 def current_url(request, url_name):
     """
     Returns the reversed url only if it is NOT the current url.
+    Otherwise returns the character "`#`"
 
-    Ussage:
-    <a href="{% current_url request url_name %}"></a>
+    Usage:
+    <a href="{% current_url request url_name %}">Some link</a>
     """
     url = reverse(url_name)
     if request.path == url:
@@ -87,7 +92,7 @@ def mkrange(parser, token):
     Accepts the same arguments as the 'range' builtin and creates
     a list containing the result of 'range'.
 
-    Syntax:
+    Usage:
         {% mkrange [start, ]stop[, step] as context_name %}
 
     For example:

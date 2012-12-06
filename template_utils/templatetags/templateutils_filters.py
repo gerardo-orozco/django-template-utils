@@ -66,7 +66,10 @@ def nolinebrs(value):
 def startswith(value, arg):
     """
     Returns whether the given value starts with the given string arg.
-    <arg> must be a string
+    <arg> must be a string.
+
+    Usage:
+    {{ value|startsvith:"arg" }}
     """
     return value.startswith(arg)
 
