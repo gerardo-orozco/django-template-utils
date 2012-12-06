@@ -17,7 +17,7 @@ Example: Assuming that the reversed url is the current url, this tag will act as
     {% active_url request url_name use_class=False %} -> ui-active-url
     {% active_url request url_name class_name=myclass use_class=False %} -> myclass
 
-Where "urlname" is the name of the url to check; this must be defined in your `URLCONF`, otherwise it will raise a NoReverseMatch Error.
+Where `urlname` is the name of the url to check; this must be defined in your `URLCONF`, otherwise it will raise a `NoReverseMatch` Error.
 
 #### current_url
 
@@ -40,7 +40,7 @@ Usage:
 
 #### mkrange
 
-Accepts the same arguments as the 'range' builtin and creates a list containing the result of 'range'.
+Accepts the same arguments as the builtin `range` function and creates a list containing the result of `range`.
 
 Usage:
 
@@ -86,7 +86,7 @@ Removes all `<br>` tags in the given string.
 
 #### startswith
 
-Returns whether the given value starts with the given string arg. The argu must be a string.
+Returns whether the given value starts with the given string arg. The argument must be a string.
 
 Usage:
 
@@ -94,13 +94,13 @@ Usage:
 
 #### creditcard
 
-Hides parts of strings such as credit card or bank account numbers to show only the last amount of numbers.
+Hides parts of strings such as credit card or bank account numbers to show only the last amount of numbers. Default amount of numbers to show is **4**
 
 Usage:
 
-    {{ value|creditcard:chars_tohide }}
+    {{ value|creditcard:chars_to_show }}
 
-For example: Assuming value is "5000000000003456"
+For example: Assuming value is `"5000000000003456"`
 
     {{ value|creditcard:4 }}
 
@@ -122,9 +122,8 @@ or
         {{ field|display }}
     {% endfor %}
 
-For example:
+For example: Assuming <field> is a BooleanField with True
 
-    Assuming <field> is a BooleanField with True
     {{ field|display }}
 
-Produces: The string 'Yes'
+Produces: The string `Yes`
