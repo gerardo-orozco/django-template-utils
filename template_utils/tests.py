@@ -3,6 +3,7 @@ from django import forms
 from django.test import TestCase
 from django.template import Template, Context
 from django.utils import timezone
+from django.utils.timezone import utc
 from template_utils.templatetags import templateutils_filters
 
 
@@ -108,6 +109,9 @@ class TemplateFiltersTest(TestCase):
 
 
 class DisplayFieldFilterTest(TestCase):
+    SOME_BIRTHDATE = timezone.datetime(1989, 7, 27, 3, 02, tzinfo=utc)
+    NOW = timezone.now()
+
     def setUp(self):
         self.text = TemplateWithFilter()
         self.form = MyForm(initial={
@@ -116,8 +120,8 @@ class DisplayFieldFilterTest(TestCase):
             'integer': 11,
             'boolean': True,
             'null_boolean': None,
-            'date': timezone.datetime(1989, 7, 27).date(),
-            'datetime': timezone.datetime(1989, 7, 27, 3, 02),
+            'date': self.SOME_BIRTHDATE.date(),
+            'datetime': self.SOME_BIRTHDATE,
             'choice': 'bar'
         })
 
@@ -126,11 +130,12 @@ class DisplayFieldFilterTest(TestCase):
         assert self.text.equals(expected_value)
 
     def test_get_display(self):
+        EXPECTED_AGE = (self.NOW - self.SOME_BIRTHDATE).days / 365
         self.get_display_value(self.form['char'], 'foo')
         self.get_display_value(self.form['decimal_'], Decimal(10))
         self.get_display_value(self.form['integer'], 11)
         self.get_display_value(self.form['boolean'], 'Yes')
         self.get_display_value(self.form['null_boolean'], 'Maybe')
-        self.get_display_value(self.form['date'], 22)  # TODO: Calculate correctly dynamic ages
-        self.get_display_value(self.form['datetime'], 22)  # TODO: Calculate correctly dynamic ages
+        self.get_display_value(self.form['date'], EXPECTED_AGE)
+        self.get_display_value(self.form['datetime'], EXPECTED_AGE)
         self.get_display_value(self.form['choice'], 'BAR')

@@ -3,6 +3,7 @@
 
 # Virtualenv
 /bin
+/local
 /include
 /build
 /lib
