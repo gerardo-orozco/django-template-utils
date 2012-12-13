@@ -2,6 +2,14 @@
 
 Just a collection of useful template tags and filters gathered in a single app.
 
+## Index
+
+- [Instalation](#instalation)
+- [Contributing](#contributing)
+- [Usage](#usage)
+ - [Tags](#tags)
+ - [Filters](#filters)
+
 ## Instalation
 
 Via pip:
@@ -17,6 +25,13 @@ Clonning the project:
     $ git clone git://github.com/gerardo-orozco/django-template-utils.git
     $ python django-template-utils/setup.py install
 
+Add the app to your istalled apps:
+
+    INSTALLED_APPS = (
+        ...
+        'template_utils',
+        ...
+    )
 ## Contributing
 
 You have an idea of a useful tag or filter? Marvelous, your contribution will be very appreciated.
@@ -25,7 +40,11 @@ Please refer to the [Contributing](https://github.com/gerardo-orozco/django-temp
 
 ## Usage
 
-### Templatetags
+### Tags
+
+First load the tags inside whatever templates you are going to use them:
+
+    {% load templateutils_tags %}
 
 #### active_url
 
@@ -81,6 +100,10 @@ Produces:
     9: Something I want to repeat
 
 ### Filters
+
+Load the filters inside whatever templates you are going to use them:
+
+    {% load templateutils_filters %}
 
 #### currency
 

@@ -1,5 +1,5 @@
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
@@ -12,8 +12,8 @@ setup(
     author_email='gerardo.orozco.mosqueda@gmail.com',
     license='BSD',
     url='https://github.com/gerardo-orozco/django-template-utils',
-    packages=['template_utils'],
-    package_data={'template_utils': ['templatetags/*']},
+    packages=find_packages(),
+    package_data={'template_utils': ['template_utils/templatetags/*.py']},
     include_package_data=True,
     classifiers=[
         'Development Status :: 4 - Beta',
