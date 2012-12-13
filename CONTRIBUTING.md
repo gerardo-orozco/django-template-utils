@@ -15,8 +15,8 @@ Any helpful template tags and filters are very welcome. Please feel free to help
 1. Fork and clone the project
 2. Hack at will
 3. Write appropriate tests
-4. Ensure all the tests pass and that the documentation and usage still fit the changes; please fix any discrepancy
-5. Add corresponding documentation in the tags and filters themselved
+4. Write appropriate docstrings in the tags and filters code
+5. Ensure all the tests pass
 6. Give a breif explanation of the usage in README.md
 7. Commit and push
 8. Send a pull request
@@ -25,6 +25,6 @@ Any helpful template tags and filters are very welcome. Please feel free to help
 
 1. Fork and clone the project
 2. Fix the bugs you find in whichever way you consider it won't fail anymore
-3. Ensure all the tests pass and that the documentation and usage still fit the changes; please fix any discrepancy
+3. Ensure all the tests pass and that the documentation and usage instructions still fit the changes; please fix any discrepancy
 4. Commit and push
 5. Send a pull request
