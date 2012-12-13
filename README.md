@@ -2,6 +2,21 @@
 
 Just a collection of useful template tags and filters gathered in a single app.
 
+## Instalation
+
+Via pip:
+
+    pip install django-template-utils
+
+Via easy_install:
+
+    easy_install django-template-utils
+
+Clonning the project:
+
+    $ git clone git://github.com/gerardo-orozco/django-template-utils.git
+    $ python django-template-utils/setup.py install
+
 ## Usage
 
 ### Templatetags
