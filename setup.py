@@ -13,6 +13,7 @@ setup(
     license='BSD',
     url='https://github.com/gerardo-orozco/django-template-utils',
     packages=['template_utils'],
+    package_data={'template_utils': ['templatetags/*']},
     include_package_data=True,
     classifiers=[
         'Development Status :: 4 - Beta',
