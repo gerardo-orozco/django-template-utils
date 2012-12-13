@@ -17,6 +17,12 @@ Clonning the project:
     $ git clone git://github.com/gerardo-orozco/django-template-utils.git
     $ python django-template-utils/setup.py install
 
+## Contributing
+
+You have an idea of a useful tag or filter? Marvelous, your contribution will be very appreciated.
+
+Please refer to the [Contributing](https://github.com/gerardo-orozco/django-template-utils/blob/master/CONTRIBUTING.md) section and have a happy coding!
+
 ## Usage
 
 ### Templatetags
