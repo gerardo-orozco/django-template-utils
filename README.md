@@ -34,7 +34,7 @@ Add the app to your istalled apps:
     )
 ## Contributing
 
-You have an idea of a useful tag or filter? Marvelous, your contribution will be very appreciated.
+You have an idea of a useful tag or filter? Found a bug? Marvelous, your contribution will be very appreciated.
 
 Please refer to the [Contributing](https://github.com/gerardo-orozco/django-template-utils/blob/master/CONTRIBUTING.md) section and have a happy coding!
 
@@ -124,7 +124,7 @@ Usage:
     {{ value|int }}
     {% tag_that_requires_int value|int %}
 
-##### nolinebrs
+#### nolinebrs
 
 Removes all `<br>` tags in the given string.
 
@@ -166,7 +166,7 @@ or
         {{ field|display }}
     {% endfor %}
 
-For example: Assuming <field> is a BooleanField with True
+For example: Assuming `field` is a `BooleanField` with `True`
 
     {{ field|display }}
 

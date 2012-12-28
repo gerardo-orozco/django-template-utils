@@ -1,4 +1,3 @@
-# based on: http://www.djangosnippets.org/snippets/282/
 from django import template
 from django.template import resolve_variable, TemplateSyntaxError
 from django.contrib.auth.models import Group
