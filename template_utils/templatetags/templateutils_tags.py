@@ -46,6 +46,14 @@ def current_url(request, url_name):
     if request.path == url:
         return '#'
     return url
+    
+    
+@register.simple_tag
+def get_verbose_field_name(instance, field_name):
+    """
+    Returns verbose_name for a field.
+    """
+    return instance._meta.get_field(field_name).verbose_name
 
 
 @register.tag()
