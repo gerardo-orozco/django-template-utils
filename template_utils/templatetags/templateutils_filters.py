@@ -33,7 +33,10 @@ def currency(value, other_locale=None):
     $13.00
     """
     if type(value) in (int, float, Decimal):
-        locale.setlocale(locale.LC_ALL, '%s.utf8' % (other_locale or 'en_US'))
+        try:
+            locale.setlocale(locale.LC_ALL, '%s.utf8' % (other_locale or 'en_US'))
+        except locale.Error:
+            locale.setlocale(locale.LC_ALL, '%s.UTF-8' % (other_locale or 'en_US'))
         return locale.currency(value, grouping=True)
     return value
 

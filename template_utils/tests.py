@@ -109,7 +109,7 @@ class TemplateFiltersTest(TestCase):
 
 
 class DisplayFieldFilterTest(TestCase):
-    SOME_BIRTHDATE = timezone.datetime(1989, 7, 27, 3, 02, tzinfo=utc)
+    SOME_BIRTHDATE = timezone.datetime(1989, 7, 27, 3, 2, tzinfo=utc)
     NOW = timezone.now()
 
     def setUp(self):
