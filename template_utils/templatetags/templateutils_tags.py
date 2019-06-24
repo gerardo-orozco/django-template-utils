@@ -2,6 +2,9 @@ from django import template
 from django.template import resolve_variable, TemplateSyntaxError
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
+from django.forms.models import model_to_dict
+from django.utils.safestring import mark_safe
+from django.core import serializers
 
 register = template.Library()
 
@@ -110,9 +113,9 @@ def mkrange(parser, token):
     fnctl = tokens.pop(0)
 
     def raise_error():
-        raise TemplateSyntaxError('%s accepts the syntax: {%% %s [start,] ' + \
-            'stop[, step] as context_name %%}, where "start", "stop" ' + \
-            'and "step" must all be integers.' % (fnctl, fnctl))
+        raise TemplateSyntaxError('%s accepts the syntax: {%% %s [start,] ' +
+                                  'stop[, step] as context_name %%}, where "start", "stop" ' +
+                                  'and "step" must all be integers.' % (fnctl, fnctl))
 
     range_args = []
 
@@ -142,3 +145,70 @@ class RangeNode(template.Node):
     def render(self, context):
         context[self.context_name] = range(*self.range_args)
         return ''
+
+
+# Model helpers
+@register.simple_tag
+def get_model_as_dict(instance):
+    """
+    Returns a django model instance as dictionary
+
+    Usage: {% get_model_as_dict model_instance %}
+    """
+    return model_to_dict(instance)
+
+
+@register.simple_tag
+def get_verbose_field_name(instance, field_name):
+    """
+    Returns the name title of a django field model instance
+
+    Usage: {% get_verbose_field_name model_instance model_field %}
+    """
+    return instance._meta.get_field(field_name).verbose_name.title()
+
+
+@register.simple_tag
+def get_field_url(field):
+    """
+    Returns url of filefield or imagefield object
+
+    Usage: {% get_field_url model_instance.model_field %}
+    """
+    """Regresa el field url de un FileField o ImageField """
+    return field.url
+
+
+@register.simple_tag
+def serialize_queryset(queryset, fields=None):
+    """
+    Returns queryset, with filtered fields if included
+
+    Usage: {% serialize_queryset queryset %}
+    """
+    if fields:
+        return serializers.serialize("python", queryset, fields=tuple(fields.split(",")))
+    return serializers.serialize("python", queryset)
+
+
+# General helpers
+@register.simple_tag
+def sorted_dict_fields(dict, fields):
+    """
+    Returns sorted dict based on list
+
+    Usage: {% sorted_dict_fields dict %}
+    """
+    ordered_fields = fields.split(",")
+    new_dict = {k: v for k, v in dict.items() if k in ordered_fields}
+    return sorted(new_dict.items(), key=lambda pair: ordered_fields.index(pair[0]))
+
+
+@register.simple_tag
+def template_dir(this_object):
+    """
+    Returns dir of object for introspection
+
+    Usage: {% template_dir object %}
+    """
+    return mark_safe("<pre>" + str(dir(this_object)) + "</pre>")
