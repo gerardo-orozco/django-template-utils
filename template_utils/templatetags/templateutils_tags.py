@@ -1,7 +1,7 @@
 from django import template
-from django.template import resolve_variable, TemplateSyntaxError
+from django.urls import reverse
+from django.template import Variable, TemplateSyntaxError
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from django.utils.safestring import mark_safe
 from django.core import serializers
@@ -76,7 +76,7 @@ class GroupCheckNode(template.Node):
         self.nodelist = nodelist
 
     def render(self, context):
-        user = resolve_variable('user', context)
+        user = Variable('user').resolve(context)
         if not user.is_authenticated:
             return ''
         try:
@@ -169,7 +169,7 @@ def get_verbose_field_name(instance, field_name):
 
 
 @register.simple_tag
-def get_field_url(field):
+def get_modelfield_url(field):
     """
     Returns url of filefield or imagefield object
 
