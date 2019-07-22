@@ -5,6 +5,9 @@ from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 from django.utils.safestring import mark_safe
 from django.core import serializers
+from hashlib import md5
+from urllib.parse import urlencode
+
 
 register = template.Library()
 
@@ -212,3 +215,21 @@ def template_dir(this_object):
     Usage: {% template_dir object %}
     """
     return mark_safe("<pre>" + str(dir(this_object)) + "</pre>")
+
+
+@register.simple_tag
+def get_gravatar(email, size=60, rating='g', default=None):
+    """
+    Return url for a Gravatar.
+
+    Usage {% get_gravatar show_user.email 100 %}
+    """
+    url = 'https://secure.gravatar.com/avatar/{0}.jpg'.format(
+        md5(email.strip().lower().encode('utf-8')).hexdigest()
+    )
+    options = {'s': size, 'r': rating}
+    if default:
+        options['d'] = default
+
+    url = '%s?%s' % (url, urlencode(options))
+    return url.replace('&', '&amp;')
