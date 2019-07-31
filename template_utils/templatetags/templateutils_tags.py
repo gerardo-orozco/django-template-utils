@@ -1,6 +1,7 @@
 from django import template
 from django.urls import reverse
 from django.template import Variable, TemplateSyntaxError
+from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 from django.utils.safestring import mark_safe
@@ -217,15 +218,27 @@ def template_dir(this_object):
     return mark_safe("<pre>" + str(dir(this_object)) + "</pre>")
 
 
-@register.simple_tag
-def get_gravatar(email, size=60, rating='g', default=None):
+@register.simple_tag(takes_context=True)
+def get_gravatar(context, size=64, rating='g', default=None):
     """
-    Return url for a Gravatar.
+    Return url for a gravatar.
 
-    Usage {% get_gravatar show_user.email 100 %}
+    Usage {% get_gravatar %}
     """
+    if 'request' not in context:
+        raise ImproperlyConfigured(
+            "get_gravatar template tag requires 'django.core.context_processors.request'"
+            " context processor installed.")
+
+    user = context["user"]
+    if not user.is_authenticated:
+        raise ImproperlyConfigured("get_gravatar template tag requires authenticated user")
+
+    if not user.email:
+        raise ImproperlyConfigured("get_gravatar template tag requires user with email")
+
     url = 'https://secure.gravatar.com/avatar/{0}.jpg'.format(
-        md5(email.strip().lower().encode('utf-8')).hexdigest()
+        md5(user.email.strip().lower().encode('utf-8')).hexdigest()
     )
     options = {'s': size, 'r': rating}
     if default:
@@ -233,3 +246,38 @@ def get_gravatar(email, size=60, rating='g', default=None):
 
     url = '%s?%s' % (url, urlencode(options))
     return url.replace('&', '&amp;')
+
+
+@register.simple_tag(takes_context=True)
+def get_uiavatar(context, size=64, rounded=True):
+    """
+    Return url for a letter avatar.
+
+    Usage {% get_uiavatar %}
+    """
+    colors = ['e6194B', '3cb44b', 'ffe119', '4363d8', 'f58231', '911eb4',
+              '42d4f4', 'f032e6', 'bfef45', 'fabebe', '469990', 'e6beff',
+              '9A6324', 'fffac8', '800000', 'aaffc3', '808000', 'ffd8b1',
+              '000075', 'a9a9a9']
+
+    if 'request' not in context:
+        raise ImproperlyConfigured(
+            "get_uiavatar template tag requires 'django.core.context_processors.request'"
+            " context processor installed.")
+
+    user = context["user"]
+    if not user.is_authenticated:
+        raise ImproperlyConfigured("get_uiavatar template tag requires authenticated user")
+
+    name = user.first_name if user.first_name else user.username
+    if user.last_name:
+        name += " " + user.last_name[0]  # fix en caso de mas de 1 apellio
+
+    url = 'https://ui-avatars.com/api/'
+
+    options = {'name': name, 'size': size, 'color': 'fff', 'background': colors[user.id % 20]}
+    if rounded:
+        options['rounded'] = 'true'
+
+    url = '%s?%s' % (url, urlencode(options))
+    return url
