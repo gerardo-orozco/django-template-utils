@@ -144,3 +144,8 @@ def verbose(bound_field, default=None):
 @register.filter(name='has_group')
 def has_group(user, group_name):
     return user.groups.filter(name=group_name).exists()
+
+
+@register.filter(name='fieldtype')
+def fieldtype(field):
+    return field.field.widget.__class__.__name__
