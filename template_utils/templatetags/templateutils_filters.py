@@ -72,9 +72,22 @@ def startswith(value, arg):
     <arg> must be a string.
 
     Usage:
-    {{ value|startsvith:"arg" }}
+    {{ value|startswith:"arg" }}
     """
     return value.startswith(arg)
+
+
+@register.filter
+@stringfilter
+def endswith(value, arg):
+    """
+    Returns whether the given value ends with the given string arg.
+    <arg> must be a string.
+
+    Usage:
+    {{ value|endswith:"arg" }}
+    """
+    return value.endswith(arg)
 
 
 @register.filter
