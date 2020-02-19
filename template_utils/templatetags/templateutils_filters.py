@@ -156,9 +156,51 @@ def verbose(bound_field, default=None):
 
 @register.filter(name='has_group')
 def has_group(user, group_name):
+    """
+    Returns True if user belongs to group
+
+    Usage:
+        {% if user|has_group:"Administrators" %}
+
+    Arguments:
+        user {auth.User} -- User to test
+        group_name {str} -- Group name
+
+    Returns:
+        [bool] -- True or False
+    """
     return user.groups.filter(name=group_name).exists()
 
 
 @register.filter(name='fieldtype')
 def fieldtype(field):
+    """
+    Returns the field type of the widget
+
+    Usage:
+        {% if field|fieldtype == "TextInput" %}
+
+    Arguments:
+        field {str} -- field object
+
+    Returns:
+        [str] -- Field type name
+    """
     return field.field.widget.__class__.__name__
+
+
+@register.filter(name='hasattr')
+def if_hasattr(object, attribute):
+    """
+    Returns True if the object has attribute
+
+    Arguments:
+        object {object} -- Object to evaluate
+        attribute {str} -- Name of the attribute
+
+    Returns:
+        [bool] -- True or False
+    """
+    print(type(object))
+    print(attribute)
+    return hasattr(object, attribute)
