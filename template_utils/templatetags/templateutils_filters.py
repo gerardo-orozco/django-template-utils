@@ -201,6 +201,20 @@ def if_hasattr(object, attribute):
     Returns:
         [bool] -- True or False
     """
-    print(type(object))
-    print(attribute)
     return hasattr(object, attribute)
+
+
+@register.filter(name='getattr')
+def if_getattr(o, args):
+    """Gets an attribute of an object dynamically from a string name"""
+
+    print(f"{o}: {args}")
+    try:
+        attribute, default = args.split(',')
+    except ValueError:
+        attribute, default = args, ''
+
+    if hasattr(o, str(attribute)):
+        return getattr(o, attribute, default)
+    else:
+        raise ValueError(f"{o} does not have {attribute} attribute")
