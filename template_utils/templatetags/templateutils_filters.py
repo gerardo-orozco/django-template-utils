@@ -1,6 +1,7 @@
 from decimal import Decimal
 import locale
 import re
+import datetime
 from django.utils import timezone
 from django import template
 from django.template.defaultfilters import stringfilter
@@ -218,3 +219,11 @@ def if_getattr(o, args):
         return getattr(o, attribute, default)
     else:
         raise ValueError(f"{o} does not have {attribute} attribute")
+
+
+@register.filter()
+def addDays(date, days):
+    """Adds a specific number of days to date object, it doesn't care if is timezone date"""
+    newDate = date + datetime.timedelta(days=days)
+    return newDate
+
