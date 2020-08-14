@@ -28,6 +28,6 @@ setup(
         'Topic :: Utilities',
     ],
     install_requires=[
-        'Django<2.2',
+        'Django<3.1',
     ]
 )
