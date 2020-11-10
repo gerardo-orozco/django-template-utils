@@ -1,7 +1,14 @@
 from django import template
-from django.template import resolve_variable, TemplateSyntaxError
+from django.urls import reverse
+from django.template import Variable, TemplateSyntaxError
+from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse
+from django.forms.models import model_to_dict
+from django.utils.safestring import mark_safe
+from django.core import serializers
+from hashlib import md5
+from urllib.parse import urlencode
+
 
 register = template.Library()
 
@@ -73,7 +80,7 @@ class GroupCheckNode(template.Node):
         self.nodelist = nodelist
 
     def render(self, context):
-        user = resolve_variable('user', context)
+        user = Variable('user').resolve(context)
         if not user.is_authenticated:
             return ''
         try:
@@ -110,9 +117,9 @@ def mkrange(parser, token):
     fnctl = tokens.pop(0)
 
     def raise_error():
-        raise TemplateSyntaxError('%s accepts the syntax: {%% %s [start,] ' + \
-            'stop[, step] as context_name %%}, where "start", "stop" ' + \
-            'and "step" must all be integers.' % (fnctl, fnctl))
+        raise TemplateSyntaxError('%s accepts the syntax: {%% %s [start,] ' +
+                                  'stop[, step] as context_name %%}, where "start", "stop" ' +
+                                  'and "step" must all be integers.' % (fnctl, fnctl))
 
     range_args = []
 
@@ -142,3 +149,135 @@ class RangeNode(template.Node):
     def render(self, context):
         context[self.context_name] = range(*self.range_args)
         return ''
+
+
+# Model helpers
+@register.simple_tag
+def get_model_as_dict(instance):
+    """
+    Returns a django model instance as dictionary
+
+    Usage: {% get_model_as_dict model_instance %}
+    """
+    return model_to_dict(instance)
+
+
+@register.simple_tag
+def get_verbose_field_name(instance, field_name):
+    """
+    Returns the name title of a django field model instance
+
+    Usage: {% get_verbose_field_name model_instance model_field %}
+    """
+    return instance._meta.get_field(field_name).verbose_name.title()
+
+
+@register.simple_tag
+def get_modelfield_url(field):
+    """
+    Returns url of filefield or imagefield object
+
+    Usage: {% get_field_url model_instance.model_field %}
+    """
+    """Regresa el field url de un FileField o ImageField """
+    return field.url
+
+
+@register.simple_tag
+def serialize_queryset(queryset, fields=None):
+    """
+    Returns queryset, with filtered fields if included
+
+    Usage: {% serialize_queryset queryset %}
+    """
+    if fields:
+        return serializers.serialize("python", queryset, fields=tuple(fields.split(",")))
+    return serializers.serialize("python", queryset)
+
+
+# General helpers
+@register.simple_tag
+def sorted_dict_fields(dict, fields):
+    """
+    Returns sorted dict based on list
+
+    Usage: {% sorted_dict_fields dict %}
+    """
+    ordered_fields = fields.split(",")
+    new_dict = {k: v for k, v in dict.items() if k in ordered_fields}
+    return sorted(new_dict.items(), key=lambda pair: ordered_fields.index(pair[0]))
+
+
+@register.simple_tag
+def template_dir(this_object):
+    """
+    Returns dir of object for introspection
+
+    Usage: {% template_dir object %}
+    """
+    return mark_safe("<pre>" + str(dir(this_object)) + "</pre>")
+
+
+@register.simple_tag(takes_context=True)
+def get_gravatar(context, size=64, rating='g', default=None):
+    """
+    Return url for a gravatar.
+
+    Usage {% get_gravatar %}
+    """
+    if 'request' not in context:
+        raise ImproperlyConfigured(
+            "get_gravatar template tag requires 'django.core.context_processors.request'"
+            " context processor installed.")
+
+    user = context["user"]
+    if not user.is_authenticated:
+        raise ImproperlyConfigured("get_gravatar template tag requires authenticated user")
+
+    if not user.email:
+        raise ImproperlyConfigured("get_gravatar template tag requires user with email")
+
+    url = 'https://secure.gravatar.com/avatar/{0}.jpg'.format(
+        md5(user.email.strip().lower().encode('utf-8')).hexdigest()
+    )
+    options = {'s': size, 'r': rating}
+    if default:
+        options['d'] = default
+
+    url = '%s?%s' % (url, urlencode(options))
+    return url.replace('&', '&amp;')
+
+
+@register.simple_tag(takes_context=True)
+def get_uiavatar(context, size=64, rounded=True):
+    """
+    Return url for a letter avatar.
+
+    Usage {% get_uiavatar %}
+    """
+    colors = ['e6194B', '3cb44b', 'ffe119', '4363d8', 'f58231', '911eb4',
+              '42d4f4', 'f032e6', 'bfef45', 'fabebe', '469990', 'e6beff',
+              '9A6324', 'fffac8', '800000', 'aaffc3', '808000', 'ffd8b1',
+              '000075', 'a9a9a9']
+
+    if 'request' not in context:
+        raise ImproperlyConfigured(
+            "get_uiavatar template tag requires 'django.core.context_processors.request'"
+            " context processor installed.")
+
+    user = context["user"]
+    if not user.is_authenticated:
+        raise ImproperlyConfigured("get_uiavatar template tag requires authenticated user")
+
+    name = user.first_name if user.first_name else user.username
+    if user.last_name:
+        name += " " + user.last_name[0]  # fix en caso de mas de 1 apellio
+
+    url = 'https://ui-avatars.com/api/'
+
+    options = {'name': name, 'size': size, 'color': 'fff', 'background': colors[user.id % 20]}
+    if rounded:
+        options['rounded'] = 'true'
+
+    url = '%s?%s' % (url, urlencode(options))
+    return url

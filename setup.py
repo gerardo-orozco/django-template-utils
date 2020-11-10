@@ -5,7 +5,7 @@ README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
 setup(
     name='django-template-utils',
-    version='0.1.1',
+    version=__import__('template_utils').__version__,
     description='Just a collection of useful template tags and filters gathered in a single app.',
     long_description=README,
     author='Gerardo Orozco Mosqueda',
@@ -28,6 +28,6 @@ setup(
         'Topic :: Utilities',
     ],
     install_requires=[
-        'Django>=1.4',
+        'Django<3.1',
     ]
 )

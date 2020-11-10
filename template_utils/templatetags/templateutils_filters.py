@@ -1,6 +1,7 @@
 from decimal import Decimal
 import locale
 import re
+import datetime
 from django.utils import timezone
 from django import template
 from django.template.defaultfilters import stringfilter
@@ -72,9 +73,22 @@ def startswith(value, arg):
     <arg> must be a string.
 
     Usage:
-    {{ value|startsvith:"arg" }}
+    {{ value|startswith:"arg" }}
     """
     return value.startswith(arg)
+
+
+@register.filter
+@stringfilter
+def endswith(value, arg):
+    """
+    Returns whether the given value ends with the given string arg.
+    <arg> must be a string.
+
+    Usage:
+    {{ value|endswith:"arg" }}
+    """
+    return value.endswith(arg)
 
 
 @register.filter
@@ -139,3 +153,77 @@ def verbose(bound_field, default=None):
             today = today.date()
         age = (today - bound_field.value()).days / 365
         return age
+
+
+@register.filter(name='has_group')
+def has_group(user, group_name):
+    """
+    Returns True if user belongs to group
+
+    Usage:
+        {% if user|has_group:"Administrators" %}
+
+    Arguments:
+        user {auth.User} -- User to test
+        group_name {str} -- Group name
+
+    Returns:
+        [bool] -- True or False
+    """
+    return user.groups.filter(name=group_name).exists()
+
+
+@register.filter(name='fieldtype')
+def fieldtype(field):
+    """
+    Returns the field type of the widget
+
+    Usage:
+        {% if field|fieldtype == "TextInput" %}
+
+    Arguments:
+        field {str} -- field object
+
+    Returns:
+        [str] -- Field type name
+    """
+    return field.field.widget.__class__.__name__
+
+
+@register.filter(name='hasattr')
+def if_hasattr(object, attribute):
+    """
+    Returns True if the object has attribute
+
+    Arguments:
+        object {object} -- Object to evaluate
+        attribute {str} -- Name of the attribute
+
+    Returns:
+        [bool] -- True or False
+    """
+    return hasattr(object, attribute)
+
+
+@register.filter(name='getattr')
+def if_getattr(o, args):
+    """Gets an attribute of an object dynamically from a string name"""
+
+    print(f"{o}: {args}")
+    try:
+        attribute, default = args.split(',')
+    except ValueError:
+        attribute, default = args, ''
+
+    if hasattr(o, str(attribute)):
+        return getattr(o, attribute, default)
+    else:
+        raise ValueError(f"{o} does not have {attribute} attribute")
+
+
+@register.filter()
+def addDays(date, days):
+    """Adds a specific number of days to date object, it doesn't care if is timezone date"""
+    newDate = date + datetime.timedelta(days=days)
+    return newDate
+
