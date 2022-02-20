@@ -4,8 +4,6 @@ import re
 import datetime
 from django.utils import timezone
 from django import template
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import Permission
 from django.template.defaultfilters import stringfilter
 from django.forms import (
     CharField,
@@ -245,6 +243,5 @@ def if_has_perm(user, perm_name):
     Returns:
         [bool] -- True or False
     """
-    perm = get_object_or_404(Permission, name=perm_name)
     return user.has_perm(perm_name)
 
