@@ -5,6 +5,7 @@ import datetime
 from django.utils import timezone
 from django import template
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import Permission
 from django.template.defaultfilters import stringfilter
 from django.forms import (
     CharField,
