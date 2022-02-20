@@ -284,14 +284,14 @@ def get_uiavatar(context, size=64, rounded=True):
 
 
 @register.simple_tag(takes_context=True)
-def get_userperm(context):
+def get_userperms(context):
     """
-    Return user_perms
+    Return user_perm
 
-    Usage {% get_userperm %}
+    Usage {% get_userperms %}
     """
     user = context["user"]
     if not user.is_authenticated:
-        raise ImproperlyConfigured("get_userperm template tag requires authenticated user")
+        raise ImproperlyConfigured("get_userperms template tag requires authenticated user")
 
     return user.get_all_permissions()
