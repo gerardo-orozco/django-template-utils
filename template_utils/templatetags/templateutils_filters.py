@@ -227,3 +227,22 @@ def addDays(date, days):
     newDate = date + datetime.timedelta(days=days)
     return newDate
 
+
+@register.filter(name='has_perm')
+def if_has_perm(user, perm_name):
+    """
+    Returns True if user has_perm
+
+    Usage:
+        {% if user|has_perm:"auth.add_user" %}
+
+    Arguments:
+        user {auth.User} -- User to test
+        perm_name {str} -- Perm name
+
+    Returns:
+        [bool] -- True or False
+    """
+    perm = get_object_or_404(Permission, name=perm_name)
+    return user.has_perm(perm_name)
+
